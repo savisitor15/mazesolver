@@ -1,4 +1,4 @@
-from tkinter import Tk, BOTH, Canvas
+from tkinter import Tk, BOTH, Canvas, Frame
 from enum import Enum
 
 class Colors(Enum):
@@ -8,11 +8,12 @@ class Colors(Enum):
     WHITE = "#d9d9d9"
 
 class Window(object):
-    def __init__(self, width, height, root=None, title="maze solver") -> 'Window':
-        self._root = Tk() if not root else root
-        self._root.title = title
+    def __init__(self, width, height, title="maze solver") -> 'Window':
+        self._root = Tk()
+        self._root.title(title)
+        self._root.geometry(f"{width}x{height}")
         self._canvas = Canvas()
-        self._canvas.pack(expand=1)
+        self._canvas.pack(fill=BOTH, expand=1)
         self._running = False
         self._root.protocol("WM_DELETE_WINDOW", self.close)
 
