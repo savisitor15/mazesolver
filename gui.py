@@ -45,3 +45,28 @@ class Line(object):
             raise ValueError("Invalid color!")
         canvas.create_line(self.__start.x, self.__start.y, self.__end.x, self.__end.y,
                            fill=fillcolor.value)
+        
+class Cell(object):
+    def __init__(self, tleft:Point, bright:Point):
+        self.__x1 = tleft.x
+        self.__y1 = tleft.y
+        self.__x2 = bright.x
+        self.__y2 = bright.y
+        self.has_top_wall = True
+        self.has_bottom_wall = True
+        self.has_left_wall = True
+        self.has_right_wall = True
+
+    def draw(self, canvas:Canvas, fillcolor:Colors):
+        if fillcolor not in Colors:
+            raise ValueError("Invalid color!")
+        fillcolor = fillcolor.value
+        if self.has_top_wall:
+            canvas.create_line(self.__x1, self.__y1, self.__x2, self.__y1, fill=fillcolor)
+        if self.has_bottom_wall:
+            canvas.create_line(self.__x1, self.__y2, self.__x2, self.__y2, fill=fillcolor)
+        if self.has_left_wall:
+            canvas.create_line(self.__x1, self.__y1, self.__x1, self.__y2, fill=fillcolor)
+        if self.has_right_wall:
+            canvas.create_line(self.__x2, self.__y1, self.__x2, self.__y2, fill=fillcolor)
+

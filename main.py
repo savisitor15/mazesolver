@@ -1,4 +1,4 @@
-from gui import Window, Point, Line, Colors
+from gui import Window, Point, Line, Colors, Cell
 
 if __name__ == "__main__":
     win = Window(800, 600)
@@ -9,4 +9,5 @@ if __name__ == "__main__":
     ]
     for lin in test_lines:
         win.draw_line(lin, Colors.BLACK)
+    win.draw_line(Cell(Point(40,40), Point(60,60)), Colors.BLACK)
     win.wait_for_close()
