@@ -62,6 +62,7 @@ class Cell(object):
         self.has_left_wall = True
         self.has_right_wall = True
         self._win = win
+        self.visited = False
 
     def get_center(self) -> Point:
         return Point((self._x1 + self._x2) / 2, (self._y1 + self._y2) / 2)
