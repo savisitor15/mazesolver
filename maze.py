@@ -10,6 +10,7 @@ class Maze(object):
         self._win = win
         self._cells = []
         self._create_cells()
+        self._break_entrance_and_exit()
 
     def _create_cells(self):
         for x in range(self._cols):
@@ -22,6 +23,15 @@ class Maze(object):
         for i, col in enumerate(self._cells):
             for j, row in enumerate(col):
                 self._draw_cell(i, j)
+
+    def _break_entrance_and_exit(self):
+        maze_entrance:Cell = self._cells[0][0]
+        maze_entrance.has_left_wall = False
+        self._draw_cell(0,0)
+        maze_exit:Cell = self._cells[self._cols-1][self._rows-1]
+        maze_exit.has_bottom_wall = False
+        self._draw_cell(self._cols-1, self._rows-1)
+        
     
     def _draw_cell(self, i, j):
         cell:Cell = self._cells[i][j]

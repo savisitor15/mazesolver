@@ -5,6 +5,7 @@ class Colors(Enum):
     RED = "red"
     BLACK = "black"
     GRAY = "gray"
+    WHITE = "#d9d9d9"
 
 class Window(object):
     def __init__(self, width, height, root=None, title="maze solver") -> 'Window':
@@ -71,14 +72,11 @@ class Cell(object):
         if fillcolor not in Colors:
             raise ValueError("Invalid color!")
         fillcolor = fillcolor.value
-        if self.has_top_wall:
-            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), fillcolor)
-        if self.has_bottom_wall:
-            self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), fillcolor)
-        if self.has_left_wall:
-            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), fillcolor)
-        if self.has_right_wall:
-            self._win.draw_line(Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), fillcolor)
+        white = Colors.WHITE.value
+        self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), fillcolor if self.has_top_wall else white)
+        self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), fillcolor if self.has_bottom_wall else white)
+        self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), fillcolor if self.has_left_wall else white)
+        self._win.draw_line(Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), fillcolor if self.has_right_wall else white)
 
     def draw_move(self, to_cell:'Cell', undo=False):
         if not self._win:
