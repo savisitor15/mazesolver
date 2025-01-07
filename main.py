@@ -8,6 +8,10 @@ if __name__ == "__main__":
                   Line(Point(10,10), Point(20,10))
     ]
     for lin in test_lines:
-        win.draw_line(lin, Colors.BLACK)
-    win.draw_line(Cell(Point(40,40), Point(60,60)), Colors.BLACK)
+        win.draw_line(lin, Colors.BLACK.value)
+    test_cells = [Cell(Point(40,40), Point(60,60), win), Cell(Point(60,40), Point(80,60), win), Cell(Point(80,40), Point(100,60), win)]
+    for cell in test_cells:
+        cell.draw(Colors.BLACK)
+    test_cells[0].draw_move(test_cells[1])
+    test_cells[1].draw_move(test_cells[2], True)
     win.wait_for_close()

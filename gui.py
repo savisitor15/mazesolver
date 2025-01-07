@@ -4,6 +4,7 @@ from enum import Enum
 class Colors(Enum):
     RED = "red"
     BLACK = "black"
+    GRAY = "gray"
 
 class Window(object):
     def __init__(self, width, height, root=None, title="maze solver") -> 'Window':
@@ -18,7 +19,7 @@ class Window(object):
         self.__root.update_idletasks()
         self.__root.update()
 
-    def draw_line(self, line:'Line', fillcolor:Colors):
+    def draw_line(self, line:'Line', fillcolor:str):
         line.draw(self.__canvas, fillcolor)
 
     def wait_for_close(self):
@@ -44,10 +45,10 @@ class Line(object):
         if fillcolor not in Colors:
             raise ValueError("Invalid color!")
         canvas.create_line(self.__start.x, self.__start.y, self.__end.x, self.__end.y,
-                           fill=fillcolor.value)
+                           fill=fillcolor)
         
 class Cell(object):
-    def __init__(self, tleft:Point, bright:Point):
+    def __init__(self, tleft:Point, bright:Point, win:Window):
         self.__x1 = tleft.x
         self.__y1 = tleft.y
         self.__x2 = bright.x
@@ -56,17 +57,27 @@ class Cell(object):
         self.has_bottom_wall = True
         self.has_left_wall = True
         self.has_right_wall = True
+        self.__win = win
 
-    def draw(self, canvas:Canvas, fillcolor:Colors):
+    def get_center(self) -> Point:
+        return Point((self.__x1 + self.__x2) / 2, (self.__y1 + self.__y2) / 2)
+
+    def draw(self, fillcolor:Colors):
         if fillcolor not in Colors:
             raise ValueError("Invalid color!")
         fillcolor = fillcolor.value
         if self.has_top_wall:
-            canvas.create_line(self.__x1, self.__y1, self.__x2, self.__y1, fill=fillcolor)
+            self.__win.draw_line(Line(Point(self.__x1, self.__y1), Point(self.__x2, self.__y1)), fillcolor)
         if self.has_bottom_wall:
-            canvas.create_line(self.__x1, self.__y2, self.__x2, self.__y2, fill=fillcolor)
+            self.__win.draw_line(Line(Point(self.__x1, self.__y2), Point(self.__x2, self.__y2)), fillcolor)
         if self.has_left_wall:
-            canvas.create_line(self.__x1, self.__y1, self.__x1, self.__y2, fill=fillcolor)
+            self.__win.draw_line(Line(Point(self.__x1, self.__y1), Point(self.__x1, self.__y2)), fillcolor)
         if self.has_right_wall:
-            canvas.create_line(self.__x2, self.__y1, self.__x2, self.__y2, fill=fillcolor)
+            self.__win.draw_line(Line(Point(self.__x2, self.__y1), Point(self.__x2, self.__y2)), fillcolor)
+
+    def draw_move(self, to_cell:'Cell', undo=False):
+        target: Point = to_cell.get_center()
+        origin: Point = self.get_center()
+        fillcolor = Colors.GRAY.value if undo else Colors.RED.value 
+        self.__win.draw_line(Line(Point(origin.x, origin.y), Point(target.x, target.y)), fillcolor)
 
