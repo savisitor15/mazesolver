@@ -8,27 +8,27 @@ class Colors(Enum):
 
 class Window(object):
     def __init__(self, width, height, root=None, title="maze solver") -> 'Window':
-        self.__root = Tk() if not root else root
-        self.__root.title = title
-        self.__canvas = Canvas()
-        self.__canvas.pack(expand=1)
-        self.__running = False
-        self.__root.protocol("WM_DELETE_WINDOW", self.close)
+        self._root = Tk() if not root else root
+        self._root.title = title
+        self._canvas = Canvas()
+        self._canvas.pack(expand=1)
+        self._running = False
+        self._root.protocol("WM_DELETE_WINDOW", self.close)
 
     def redraw(self) -> None:
-        self.__root.update_idletasks()
-        self.__root.update()
+        self._root.update_idletasks()
+        self._root.update()
 
     def draw_line(self, line:'Line', fillcolor:str):
-        line.draw(self.__canvas, fillcolor)
+        line.draw(self._canvas, fillcolor)
 
     def wait_for_close(self):
-        self.__running = True
-        while self.__running:
+        self._running = True
+        while self._running:
             self.redraw()
 
     def close(self) -> None:
-        self.__running = False
+        self._running = False
 
 
 class Point(object):
@@ -36,48 +36,55 @@ class Point(object):
         self.x = x
         self.y = y
 
+    def __add__(self, other:'Point') -> 'Point':
+        return Point(self.x + other.x, self.y + other.y)
+
 class Line(object):
     def __init__(self, pointA:Point, pointB:Point):
-        self.__start = pointA
-        self.__end = pointB
+        self._start = pointA
+        self._end = pointB
     
     def draw(self, canvas:Canvas, fillcolor:Colors):
         if fillcolor not in Colors:
             raise ValueError("Invalid color!")
-        canvas.create_line(self.__start.x, self.__start.y, self.__end.x, self.__end.y,
+        canvas.create_line(self._start.x, self._start.y, self._end.x, self._end.y,
                            fill=fillcolor)
         
 class Cell(object):
-    def __init__(self, tleft:Point, bright:Point, win:Window):
-        self.__x1 = tleft.x
-        self.__y1 = tleft.y
-        self.__x2 = bright.x
-        self.__y2 = bright.y
+    def __init__(self, tleft:Point, bright:Point, win:Window = None):
+        self._x1 = tleft.x
+        self._y1 = tleft.y
+        self._x2 = bright.x
+        self._y2 = bright.y
         self.has_top_wall = True
         self.has_bottom_wall = True
         self.has_left_wall = True
         self.has_right_wall = True
-        self.__win = win
+        self._win = win
 
     def get_center(self) -> Point:
-        return Point((self.__x1 + self.__x2) / 2, (self.__y1 + self.__y2) / 2)
+        return Point((self._x1 + self._x2) / 2, (self._y1 + self._y2) / 2)
 
     def draw(self, fillcolor:Colors):
+        if not self._win:
+            return
         if fillcolor not in Colors:
             raise ValueError("Invalid color!")
         fillcolor = fillcolor.value
         if self.has_top_wall:
-            self.__win.draw_line(Line(Point(self.__x1, self.__y1), Point(self.__x2, self.__y1)), fillcolor)
+            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), fillcolor)
         if self.has_bottom_wall:
-            self.__win.draw_line(Line(Point(self.__x1, self.__y2), Point(self.__x2, self.__y2)), fillcolor)
+            self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), fillcolor)
         if self.has_left_wall:
-            self.__win.draw_line(Line(Point(self.__x1, self.__y1), Point(self.__x1, self.__y2)), fillcolor)
+            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), fillcolor)
         if self.has_right_wall:
-            self.__win.draw_line(Line(Point(self.__x2, self.__y1), Point(self.__x2, self.__y2)), fillcolor)
+            self._win.draw_line(Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), fillcolor)
 
     def draw_move(self, to_cell:'Cell', undo=False):
+        if not self._win:
+            return
         target: Point = to_cell.get_center()
         origin: Point = self.get_center()
         fillcolor = Colors.GRAY.value if undo else Colors.RED.value 
-        self.__win.draw_line(Line(Point(origin.x, origin.y), Point(target.x, target.y)), fillcolor)
+        self._win.draw_line(Line(Point(origin.x, origin.y), Point(target.x, target.y)), fillcolor)
 
