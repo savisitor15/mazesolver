@@ -11,7 +11,7 @@ class Maze(object):
         self._win = win
         self._cells = []
         self._seed = seed
-        if seed:
+        if seed is not None:
             random.seed(seed)
         self._create_cells()
         self._break_entrance_and_exit()
@@ -89,4 +89,47 @@ class Maze(object):
             return
         self._win.redraw()
         time.sleep(0.01)
+
+    def solve(self):
+        return self._solve_r(0, 0)
+
+    def _solve_r(self, i, j):
+        self._animate()
+        if not self._cells:
+            return False
+        self._cells[i][j].visited = True
+        cell:Cell = self._cells[i][j]
+        if i+1 == len(self._cells) and j+1 == len(self._cells[i]):
+            # At the end gate!
+            return True
+        # Get available directions
+        if not cell.has_bottom_wall and not self._cells[i][j+1].visited:
+            neighbor = self._cells[i][j+1]
+            cell.draw_move(neighbor)
+            if self._solve_r(i, j+1):
+                return True
+            else:
+                cell.draw_move(neighbor, True)
+        if not cell.has_top_wall and not self._cells[i][j-1].visited:
+            neighbor = self._cells[i][j-1]
+            cell.draw_move(neighbor)
+            if self._solve_r(i, j-1):
+                return True
+            else:
+                cell.draw_move(neighbor, True)
+        if not cell.has_right_wall and not self._cells[i+1][j].visited:
+            neighbor = self._cells[i+1][j]
+            cell.draw_move(neighbor)
+            if self._solve_r(i+1, j):
+                return True
+            else:
+                cell.draw_move(neighbor, True)
+        if not cell.has_left_wall and not self._cells[i-1][j].visited:
+            neighbor = self._cells[i-1][j]
+            cell.draw_move(neighbor)
+            if self._solve_r(i-1, j):
+                return True
+            else:
+                cell.draw_move(neighbor, True)
+        return False
 
