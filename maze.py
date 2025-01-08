@@ -16,6 +16,7 @@ class Maze(object):
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0,0)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for x in range(self._cols):
@@ -30,6 +31,8 @@ class Maze(object):
                 self._draw_cell(i, j)
 
     def _break_entrance_and_exit(self):
+        if not self._cells:
+            return
         maze_entrance:Cell = self._cells[0][0]
         maze_entrance.has_left_wall = False
         self._draw_cell(0,0)
@@ -38,6 +41,8 @@ class Maze(object):
         self._draw_cell(self._cols-1, self._rows-1)
 
     def _break_walls_r(self, i, j):
+        if not self._cells:
+            return
         cell:Cell = self._cells[i][j]
         cell.visited = True
         while True:
@@ -68,7 +73,10 @@ class Maze(object):
                 self._cells[direction[0]][direction[1]].has_bottom_wall = False
             self._break_walls_r(direction[0], direction[1])
 
-                
+    def _reset_cells_visited(self):
+        for i in self._cells:
+            for j in i:
+                j.visited = False
 
 
     def _draw_cell(self, i, j):
